@@ -4,6 +4,10 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { User } from "./definitions";
+import { fetchUser } from "./data";
+import bcrypt from 'bcrypt';
+import { createSession, deleteSession } from "./session";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -104,4 +108,55 @@ export async function deleteInvoice(id: string) {
     `
 
     revalidatePath('/dashboard/invoices');
+}
+
+export type SignInState = {
+    errors?: {
+        email?: string[];
+        password?: string[];
+    },
+    message?: string | null;
+}
+
+const signInSchema = z.object({
+    email: z.string().email({ message: 'Invalid email address.' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters long.' }),
+});
+
+export async function signIn(prevState: SignInState, formData: FormData) {
+    const validatedFields = signInSchema.safeParse(Object.fromEntries(formData));
+
+    if (!validatedFields.success) {
+        console.log("Sign in error: Validation failed");
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Missing fields. Failed to sign in."
+        }
+    }
+    console.log(validatedFields.data);
+
+    const { email, password } = validatedFields.data;
+
+    try {
+        const user = await fetchUser(email);
+        if (!user) {
+            return { message: 'Invalid email or password.'}
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return { message: 'Invalid email or password.'}
+        }
+
+        await createSession(user.id);
+    } catch (error) {
+        return { message: 'Invalid email or password.'}
+    }
+
+    redirect("/dashboard");
+}
+
+export async function signOut() {
+    await deleteSession();
+    redirect("/");
 }
