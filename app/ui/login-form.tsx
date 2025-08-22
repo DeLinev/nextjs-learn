@@ -11,11 +11,13 @@ import { Button } from './button';
 import { useActionState } from 'react';
 import { signIn, SignInState } from '../lib/actions';
 import { error } from 'console';
+import Link from 'next/link';
+import clsx from 'clsx';
 
 export default function LoginForm() {
   const initialState: SignInState = { message: null, errors: {}}
   const [state, formAction] = useActionState(signIn, initialState);
-
+  console.log(state)
   return (
     <form action={formAction} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -84,12 +86,15 @@ export default function LoginForm() {
         <Button className="mt-4 w-full">
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
-        <div className="flex h-8 items-end space-x-1">
+        <div className={clsx("flex items-end space-x-1", { 'h8': state.message})}>
           {state.message &&
             <p className="mt-2 text-sm text-red-500" key={state.message}>
               {state.message}
             </p>
           } 
+        </div>
+        <div className='flex justify-center'>
+          <Link className='mt-2 text-sm text-blue-500 hover:underline underline-offset-2' href={"/signup"}>Don't have an account yet?</Link>
         </div>
       </div>
     </form>
