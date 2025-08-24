@@ -4,12 +4,9 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { redirect } from "next/navigation";
-import { User } from "./definitions";
 import { fetchUser } from "./data";
 import bcrypt from 'bcrypt';
 import { createSession, deleteSession } from "./session";
-import { email } from "zod/v4";
-import { errors } from "jose";
 import { v4 as uuidv4 } from "uuid";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -59,7 +56,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
             INSERT INTO invoices (customer_id, amount, status, date)
             VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
         `;
-    } catch (error) {
+    } catch {
         return {
             message: 'Database Error: Failed to create invoice.'
         }
@@ -94,7 +91,7 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
         SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
         WHERE id = ${id}
     `
-    } catch (error) {
+    } catch {
         return {
             message: 'Database Error: Failed to create invoice.'
         }
@@ -152,7 +149,7 @@ export async function signIn(prevState: SignInState, formData: FormData) {
         }
 
         await createSession(user.id);
-    } catch (error) {
+    } catch {
         return { message: 'Invalid email or password.'}
     }
 
@@ -207,7 +204,7 @@ export async function signUp(prevState: SignUpState, formData: FormData) {
         `
 
         await createSession(newId);
-    } catch (error) {
+    } catch {
         return { message: 'Invalid email, password or username.'}
     }
 

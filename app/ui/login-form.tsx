@@ -3,14 +3,12 @@
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
-  KeyIcon,
-  ExclamationCircleIcon,
+  KeyIcon
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useActionState } from 'react';
 import { signIn, SignInState } from '../lib/actions';
-import { error } from 'console';
 import Link from 'next/link';
 import clsx from 'clsx';
 
@@ -94,7 +92,7 @@ export default function LoginForm() {
           } 
         </div>
         <div className='flex justify-center'>
-          <Link className='mt-2 text-sm text-blue-500 hover:underline underline-offset-2' href={"/signup"}>Don't have an account yet?</Link>
+          <Link className='mt-2 text-sm text-blue-500 hover:underline underline-offset-2' href={"/signup"}>Don&apos;t have an account yet?</Link>
         </div>
       </div>
     </form>
