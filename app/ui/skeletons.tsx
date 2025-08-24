@@ -216,3 +216,16 @@ export function InvoicesTableSkeleton() {
     </div>
   );
 }
+
+
+export function AuthFormsSkeleton() {
+  return (
+    <div className={`${shimmer} space-y-4`}>
+      <div className="h-4 w-32 rounded-md bg-gray-100"></div>
+      <div className="h-8 w-128 rounded-md bg-gray-100"></div>
+      <div className="h-4 w-32 rounded-md bg-gray-100"></div>
+      <div className="h-8 w-128 rounded-md bg-gray-100"></div>
+      <div className="h-16 w-128 rounded-md bg-gray-100 mt-2"></div>
+    </div>
+  )
+}

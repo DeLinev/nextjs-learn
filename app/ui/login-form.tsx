@@ -8,18 +8,16 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
-import { useSearchParams } from 'next/navigation';
 import { useActionState } from 'react';
-import { authenticate } from '../lib/actions';
+import { signIn, SignInState } from '../lib/actions';
+import { error } from 'console';
+import Link from 'next/link';
+import clsx from 'clsx';
 
 export default function LoginForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined
-  );
-
+  const initialState: SignInState = { message: null, errors: {}}
+  const [state, formAction] = useActionState(signIn, initialState);
+  console.log(state)
   return (
     <form action={formAction} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -45,6 +43,15 @@ export default function LoginForm() {
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            <div>
+              {state.errors?.email &&
+                state.errors.email.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))
+              }
+            </div>
           </div>
           <div className="mt-4">
             <label
@@ -65,23 +72,29 @@ export default function LoginForm() {
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            <div>
+              {state.errors?.password &&
+                state.errors.password.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+                ))
+              }
+            </div>
           </div>
         </div>
-        <input type="hidden" name="redirectTo" value={callbackUrl} />
-        <Button className="mt-4 w-full" aria-disabled={isPending}>
+        <Button className="mt-4 w-full">
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
+        <div className={clsx("flex items-end space-x-1", { 'h8': state.message})}>
+          {state.message &&
+            <p className="mt-2 text-sm text-red-500" key={state.message}>
+              {state.message}
+            </p>
+          } 
+        </div>
+        <div className='flex justify-center'>
+          <Link className='mt-2 text-sm text-blue-500 hover:underline underline-offset-2' href={"/signup"}>Don't have an account yet?</Link>
         </div>
       </div>
     </form>

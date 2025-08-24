@@ -13,6 +13,14 @@ async function listInvoices() {
 	return data;
 }
 
+async function listUsers() {
+  const data = await sql`
+    SELECT *
+    FROM users
+  `
+  return data;
+} 
+
 async function dropDatabase() {
   await sql`DROP TABLE IF EXISTS invoices`;
   await sql`DROP TABLE IF EXISTS customers`;
@@ -28,7 +36,7 @@ export async function GET() {
   //     'Uncomment this file and remove this line. You can delete this file when you are finished.',
   // });
   try {
-  	return Response.json(await listInvoices());
+  	return Response.json(await listUsers());
   } catch (error) {
   	return Response.json({ error }, { status: 500 });
   }
